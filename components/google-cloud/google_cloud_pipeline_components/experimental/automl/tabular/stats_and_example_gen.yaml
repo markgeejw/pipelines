@@ -87,12 +87,14 @@ description: |
         instance_baseline (AutoMLTabularInstanceBaseline):
             The instance baseline used to calculate explanations.
         metadata (TabularExampleGenMetadata): The tabular example gen metadata.
+        analyze_data (AnalyzeData): The analyze_data to be used by the FTE pipeline.
+        transform_data (TransformData): The transform_data to be used by the FTE pipeline.
         gcp_resources (str):
             GCP resources created by this component.
             For more details, see https://github.com/kubeflow/pipelines/blob/master/components/google-cloud/google_cloud_pipeline_components/proto/README.md.
 inputs:
 - {name: project, type: String}
-- {name: location, type: String}
+- {name: location, type: String, default: "us-central1"}
 - {name: root_dir, type: String}
 - {name: target_column_name, type: String}
 - {name: weight_column_name, type: String, default: ""}
@@ -122,6 +124,8 @@ outputs:
 - {name: downsampled_test_split_json, type: JsonArray}
 - {name: instance_baseline, type: AutoMLTabularInstanceBaseline}
 - {name: metadata, type: TabularExampleGenMetadata}
+- {name: analyze_data, type: Dataset}
+- {name: transform_data, type: Dataset}
 - {name: gcp_resources, type: String}
 
 implementation:
@@ -198,6 +202,10 @@ implementation:
         {inputValue: additional_experiments},
         '", "--metadata_path=',
         {outputUri: metadata},
+        '", "--analyze_data_path=',
+        {outputUri: analyze_data},
+        '", "--transform_data_path=',
+        {outputUri: transform_data},
         '", "--train_split=',
         {outputUri: train_split},
         '", "--eval_split=',
